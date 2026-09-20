@@ -21,6 +21,12 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
+        /* 生词表的"释义"列在手机窄屏上隐藏，地方不够放 */
+        @media (max-width: 640px) {
+            .vocab-meaning-col {
+                display: none;
+            }
+        }
     </style>
     <script>
         // 把 <i class="fa fa-xxx"> 自动替换成内联 SVG 图标。
@@ -296,7 +302,7 @@
                                 <tr class="bg-gray-50">
                                     <th class="text-left py-3 px-4 border-b border-gray-200">词语</th>
                                     <th class="text-left py-3 px-4 border-b border-gray-200">拼音</th>
-                                    <th class="text-left py-3 px-4 border-b border-gray-200">释义</th>
+                                    <th class="text-left py-3 px-4 border-b border-gray-200 vocab-meaning-col">释义</th>
                                     <th class="text-left py-3 px-4 border-b border-gray-200">英语</th>
                                 </tr>
                             </thead>
