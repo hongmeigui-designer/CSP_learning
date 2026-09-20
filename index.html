@@ -21,10 +21,28 @@
             stroke-linecap: round;
             stroke-linejoin: round;
         }
-        /* 生词表的"释义"列在手机窄屏上隐藏，地方不够放 */
+        /* 生词提示框宽度：跟手机屏幕宽度成比例（70vw），屏幕越窄框越窄；
+           桌面端最大不超过 300px，避免在大屏幕上显得过宽。
+           max-width 是最后一道保险——不管前面的计算或 JS 定位有没有问题，
+           这条规则保证提示框本身绝对不会比屏幕还宽。 */
+        .tooltip {
+            width: min(70vw, 300px);
+            max-width: calc(100vw - 24px);
+        }
+        /* 生词表在手机窄屏上：隐藏"释义"列，并且给"词语"列固定留出足够宽度，
+           不然中文字符会被挤到只剩一个字宽，导致一个词拆成两行显示 */
         @media (max-width: 640px) {
             .vocab-meaning-col {
                 display: none;
+            }
+            #vocab-panel table {
+                table-layout: fixed;
+            }
+            .vocab-word-col {
+                width: 32%;
+            }
+            .vocab-pinyin-col {
+                width: 24%;
             }
         }
     </style>
@@ -300,8 +318,8 @@
                         <table class="w-full border-collapse">
                             <thead>
                                 <tr class="bg-gray-50">
-                                    <th class="text-left py-3 px-4 border-b border-gray-200">词语</th>
-                                    <th class="text-left py-3 px-4 border-b border-gray-200">拼音</th>
+                                    <th class="text-left py-3 px-4 border-b border-gray-200 vocab-word-col">词语</th>
+                                    <th class="text-left py-3 px-4 border-b border-gray-200 vocab-pinyin-col">拼音</th>
                                     <th class="text-left py-3 px-4 border-b border-gray-200 vocab-meaning-col">释义</th>
                                     <th class="text-left py-3 px-4 border-b border-gray-200">英语</th>
                                 </tr>
