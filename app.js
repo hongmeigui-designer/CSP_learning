@@ -373,9 +373,9 @@ function renderChineseContent() {
     
     // 替换所有生词为高亮版本，带tooltip
     currentLesson.vocabulary.forEach(vocab => {
+        // tooltip 宽度用 min(80vw, 16rem)，手机窄屏时自动收窄，不会超出屏幕
         // tooltip 用单行字符串拼接，避免内部换行被下面的按段落拆分逻辑误切开
-        const noteHtml = vocab.note ? `<div class="text-xs text-red-300 mt-1">${vocab.note}</div>` : '';
-        const tooltipHtml = `<span class="tooltip bg-gray-900 text-white text-sm rounded-lg py-2 px-3 w-64 shadow-xl z-50"><div class="font-bold mb-1">${vocab.word} <span class="text-gray-300 font-normal">${vocab.pinyin}</span></div><div class="text-xs text-gray-200 mb-1">${vocab.meaning}</div><div class="text-xs font-medium text-yellow-300">${vocab.english}</div>${noteHtml}</span>`;
+        const tooltipHtml = `<span class="tooltip bg-gray-900 text-white text-sm rounded-lg py-2 px-3 shadow-xl z-50" style="width:min(80vw,16rem)"><div class="font-bold mb-1">${vocab.word} <span class="text-gray-300 font-normal">${vocab.pinyin}</span></div><div class="text-xs text-gray-200 mb-1">${vocab.meaning}</div><div class="text-xs font-medium text-yellow-300">${vocab.english}</div></span>`;
         
         // 使用正则替换，避免重复替换
         const regex = new RegExp(`(${vocab.word})`, 'g');
@@ -426,7 +426,8 @@ function showTooltip(tip) {
     const rect = tip.getBoundingClientRect();
     const margin = 8;
     if (rect.left < margin) {
-        tip.style.transform = `translateX(${-rect.left + margin}px)`;
+        // 在原来居中的基础上，再往右多挪一点，而不是直接丢掉居中的偏移量
+        tip.style.transform = `translateX(-50%) translateX(${margin - rect.left}px)`;
     } else if (rect.right > window.innerWidth - margin) {
         tip.style.transform = `translateX(-50%) translateX(${window.innerWidth - margin - rect.right}px)`;
     }
@@ -461,7 +462,7 @@ function renderVocabTable() {
         row.innerHTML = `
             <td class="py-3 px-4 font-medium">${vocab.word}</td>
             <td class="py-3 px-4 text-gray-600">${vocab.pinyin}</td>
-            <td class="py-3 px-4 text-gray-700">${vocab.meaning}</td>
+            <td class="py-3 px-4 text-gray-700 vocab-meaning-col">${vocab.meaning}</td>
             <td class="py-3 px-4 text-primary font-medium">${vocab.english}</td>
         `;
         tbody.appendChild(row);
