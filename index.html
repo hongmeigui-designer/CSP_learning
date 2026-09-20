@@ -38,11 +38,23 @@
             #vocab-panel table {
                 table-layout: fixed;
             }
+            /* 手机上把生词表的左右内边距收窄一点，多留出些空间给内容 */
+            #vocab-panel th,
+            #vocab-panel td {
+                padding-left: 0.5rem;
+                padding-right: 0.5rem;
+            }
             .vocab-word-col {
-                width: 32%;
+                width: 30%;
             }
             .vocab-pinyin-col {
-                width: 24%;
+                width: 28%;
+                font-size: 0.75rem;
+                /* 拼音字母之间没有空格（比如 gōngguòyúqiú 是一整串），
+                   浏览器默认只在空格处换行，所以太长的拼音会直接溢出到旁边的"英语"列，
+                   造成两列文字重叠——这里强制允许在字母之间换行，让拼音自己在本列内折行 */
+                word-break: break-all;
+                overflow-wrap: break-word;
             }
         }
     </style>
