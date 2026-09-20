@@ -29,32 +29,36 @@
             width: min(70vw, 300px);
             max-width: calc(100vw - 24px);
         }
-        /* 生词表在手机窄屏上：隐藏"释义"列，并且给"词语"列固定留出足够宽度，
-           不然中文字符会被挤到只剩一个字宽，导致一个词拆成两行显示 */
+        /* 生词表：每一列都用 <colgroup> 指定固定宽度（这比给 th/td 加 class 更可靠——
+           不管 app.js 生成的 <td> 有没有带上对应的 class，列宽都不会失控）。
+           table-layout: fixed 让浏览器严格按 colgroup 的宽度分配，不再由内容撑开。
+           表格本身设了 min-width，屏幕放不下时由外层 .overflow-x-auto 容器左右滑动，
+           而不是把列往死里挤——这样每一列内部的文字永远待在自己的格子里，不会跟旁边的列重叠。 */
+        #vocab-panel table {
+            table-layout: fixed;
+            min-width: 640px;
+        }
+        #vocab-panel th,
+        #vocab-panel td {
+            overflow-wrap: break-word;
+            word-break: break-word;
+            white-space: normal;
+            vertical-align: top;
+        }
+        /* 拼音字母之间没有空格（比如 gōngguòyúqiú 是一整串），
+           光靠 break-word 在长拼音上不一定会换行，所以拼音列额外强制允许逐字母换行，
+           让拼音永远老老实实待在自己的列宽里，不会溢出到旁边的"英语"列造成重叠 */
+        #vocab-panel .vocab-pinyin-col,
+        #vocab-table-body td:nth-child(2) {
+            word-break: break-all;
+        }
         @media (max-width: 640px) {
-            .vocab-meaning-col {
-                display: none;
-            }
-            #vocab-panel table {
-                table-layout: fixed;
-            }
             /* 手机上把生词表的左右内边距收窄一点，多留出些空间给内容 */
             #vocab-panel th,
             #vocab-panel td {
                 padding-left: 0.5rem;
                 padding-right: 0.5rem;
-            }
-            .vocab-word-col {
-                width: 30%;
-            }
-            .vocab-pinyin-col {
-                width: 28%;
-                font-size: 0.75rem;
-                /* 拼音字母之间没有空格（比如 gōngguòyúqiú 是一整串），
-                   浏览器默认只在空格处换行，所以太长的拼音会直接溢出到旁边的"英语"列，
-                   造成两列文字重叠——这里强制允许在字母之间换行，让拼音自己在本列内折行 */
-                word-break: break-all;
-                overflow-wrap: break-word;
+                font-size: 0.8125rem;
             }
         }
     </style>
@@ -328,6 +332,12 @@
                 <div id="vocab-panel" class="tab-panel hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full border-collapse">
+                            <colgroup>
+                                <col style="width:22%">
+                                <col style="width:22%">
+                                <col style="width:28%">
+                                <col style="width:28%">
+                            </colgroup>
                             <thead>
                                 <tr class="bg-gray-50">
                                     <th class="text-left py-3 px-4 border-b border-gray-200 vocab-word-col">词语</th>
