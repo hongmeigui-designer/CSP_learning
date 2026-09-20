@@ -13,6 +13,8 @@ document.addEventListener('DOMContentLoaded', function() {
     initLessonControls();
     // 关闭/刷新标签页前，把当前课文已停留的时间存下来
     window.addEventListener('beforeunload', accumulateStudyTime);
+    // 点击生词提示框以外的任何地方，收起已经打开的提示框（主要是给手机点按用的）
+    document.addEventListener('click', () => hideAllTooltips());
 });
 
 // 把从进入课文到现在经过的时间累加进用户的学习时长并保存
@@ -401,15 +403,42 @@ function renderChineseContent() {
         tip.style.visibility = 'hidden';
         tip.style.opacity = '0';
         
-        el.addEventListener('mouseenter', () => {
-            tip.style.visibility = 'visible';
-            tip.style.opacity = '1';
-        });
-        el.addEventListener('mouseleave', () => {
-            tip.style.visibility = 'hidden';
-            tip.style.opacity = '0';
+        el.addEventListener('mouseenter', () => showTooltip(tip));
+        el.addEventListener('mouseleave', () => hideTooltip(tip));
+        
+        // 手机上没有真正的"悬停"，改成点一下显示、再点一下（或点别处）收起
+        el.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const isVisible = tip.style.visibility === 'visible';
+            hideAllTooltips();
+            if (!isVisible) showTooltip(tip);
         });
     });
+}
+
+// 显示提示框，并确保不会被手机窄屏挤出屏幕外
+function showTooltip(tip) {
+    tip.style.visibility = 'visible';
+    tip.style.opacity = '1';
+    tip.style.left = '50%';
+    tip.style.transform = 'translateX(-50%)';
+    
+    const rect = tip.getBoundingClientRect();
+    const margin = 8;
+    if (rect.left < margin) {
+        tip.style.transform = `translateX(${-rect.left + margin}px)`;
+    } else if (rect.right > window.innerWidth - margin) {
+        tip.style.transform = `translateX(-50%) translateX(${window.innerWidth - margin - rect.right}px)`;
+    }
+}
+
+function hideTooltip(tip) {
+    tip.style.visibility = 'hidden';
+    tip.style.opacity = '0';
+}
+
+function hideAllTooltips() {
+    document.querySelectorAll('.tooltip').forEach(hideTooltip);
 }
 
 // 渲染英文内容（纯文本，不做任何生词高亮）
